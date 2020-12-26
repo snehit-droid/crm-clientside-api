@@ -1,22 +1,39 @@
 const jwt = require('jsonwebtoken');
+const {setJWT, getJWT} = require('./redis.helper');
+const {storeUserRefreshJWT} = require("../model/user/User.model");
 
 // const token = jwt.sign({ foo: 'bar' }, 'shhhhh');
 //In the above inside jwt.sign({shhhhh}) is the secret code we need to provide.
 
-const createAccessJWT = (payload) => {
-    const accessJWT = jwt.sign(
-        { payload }, 
-        process.env.JWT_ACCESS_SECRET,
-        { expiresIn: '15m' });  //expires in 15 minutes.
-    return Promise.resolve(accessJWT);
+const createAccessJWT = async (email, _id) => {
+    //"email" is sent as the payload.
+    try {
+        const accessJWT = await jwt.sign(
+            { email }, 
+            process.env.JWT_ACCESS_SECRET,
+            { expiresIn: '15m' });  //expires in 15 minutes.
+    
+        await setJWT(accessJWT, _id)    
+    
+        return Promise.resolve(accessJWT);
+    } catch (error) {
+        return Promise.reject(error);
+    }
 }
 
-const createRefreshJWT = (payload) => {
-    const refreshJWT = jwt.sign(
-        { payload }, 
-        process.env.JWT_ACCESS_SECRET,
-        { expiresIn: '30d' });  //expires in 30 days.
-    return Promise.resolve(refreshJWT);
+const createRefreshJWT = async (email, _id) => {
+    try {
+        const refreshJWT = jwt.sign(
+            { email }, 
+            process.env.JWT_ACCESS_SECRET,
+            { expiresIn: '30d' });  //expires in 30 days.
+    
+        await storeUserRefreshJWT(_id, refreshJWT)    
+            
+        return Promise.resolve(refreshJWT);
+    } catch (error) {
+        return Promise.reject(error);
+    }    
 }
 
 module.exports = {

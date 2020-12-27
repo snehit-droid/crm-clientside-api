@@ -1,5 +1,5 @@
 const { verifyAccessJWT } = require("../helpers/jwt.helper");
-const { getJWT } = require("../helpers/redis.helper");
+const { getJWT, deleteJwT } = require("../helpers/redis.helper");
 
 const userAuthorization = async (req, res, next) => {
     const { authorization } = req.headers;
@@ -16,6 +16,9 @@ const userAuthorization = async (req, res, next) => {
         req.userId = userId;
         return next();
     }
+
+    deleteJwT(authorization)
+
     return res.status(403).json({message: "Forbidden"});
     //2. check if jwt is exist in redis
     //3. extract user id

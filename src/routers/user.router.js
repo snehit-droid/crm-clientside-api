@@ -6,6 +6,7 @@ const { createAccessJWT, createRefreshJWT } = require("../helpers/jwt.helper");
 const { userAuthorization } = require("../middlewares/authorization.middleware");
 const { setPasswordResetPin, getPinByEmailPin, deletePin } = require("../model/resetPin/ResetPin.model");
 const { emailProcessor } = require("../helpers/email.helper");
+const { resetPassReqValidation, updatePassValidation } = require("../middlewares/formValidation.middleware");
 
 router.all("/", (req, res, next) => {
     // res.json({ message: "return from user router" });
@@ -15,6 +16,7 @@ router.all("/", (req, res, next) => {
 
 //Get user profile router
 router.get("/", userAuthorization, async (req, res) => {
+    //this data coming from database
     const _id = req.userId
 
     const userProf = await getUserById(_id);
@@ -64,20 +66,13 @@ router.post("/login", async (req, res) => {
     res.json({ status: "success", message: "Login Successfully!", accessJWT, refreshJWT });
 })
     
-//B. update password in db
-    //1. receive email, pin and new password
-    //2. validate pin
-    //3. encrypt new password
-    //4. update password in db
-    //5. send email notification
-
 //C. server side form validation
     //1. create middleware to validate form data
 
 
 // nodemailer is used for sending the code to email.    
 
-router.post("/reset-password", async (req, res) => {
+router.post("/reset-password", resetPassReqValidation, async (req, res) => {
     const { email } = req.body;
 
     const user = await getUserByEmail(email);
@@ -98,7 +93,7 @@ router.post("/reset-password", async (req, res) => {
     message: "If the email exist in our database, the password reset pin will be sent shortly"});
 })
 
-router.patch("/reset-password", async (req, res) => {
+router.patch("/reset-password", updatePassValidation, async (req, res) => {
     const { email, pin, newPassword } = req.body;
     const getPin = await getPinByEmailPin(email, pin);
     if(getPin._id){

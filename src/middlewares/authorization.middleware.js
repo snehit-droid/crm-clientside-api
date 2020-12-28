@@ -20,10 +20,6 @@ const userAuthorization = async (req, res, next) => {
     deleteJwT(authorization)
 
     return res.status(403).json({message: "Forbidden"});
-    //2. check if jwt is exist in redis
-    //3. extract user id
-    //4. get user profile based on the user id
-
 };
 
 module.exports = {

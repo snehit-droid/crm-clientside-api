@@ -4,7 +4,8 @@ const { insertUser, getUserByEmail, getUserById } = require("../model/user/User.
 const { hashPassword, comparePassword } = require("../helpers/bcrypt.helper");
 const { createAccessJWT, createRefreshJWT } = require("../helpers/jwt.helper");
 const { userAuthorization } = require("../middlewares/authorization.middleware");
-const { setPasswordResetPin } = require("../model/resetPin/ResetPin.model")
+const { setPasswordResetPin } = require("../model/resetPin/ResetPin.model");
+const { emailProcessor } = require("../helpers/email.helper");
 
 router.all("/", (req, res, next) => {
     // res.json({ message: "return from user router" });
@@ -80,14 +81,25 @@ router.post("/login", async (req, res) => {
 //C. server side form validation
     //1. create middleware to validate form data
 
+
+// nodemailer is used for sending the code to email.    
+
 router.post("/reset-password", async (req, res) => {
     const { email } = req.body;
 
     const user = await getUserByEmail(email);
 
     if(user && user._id){
-        const setPin = await setPasswordResetPin(email);
-        res.json(setPin);
+        const setPin = await setPasswordResetPin(email);    //setPin is an object which has {pin, email}.
+        const result = await emailProcessor(email, setPin.pin);
+
+        if(result && result.messageId){
+            return res.json({status: "success", 
+            message: "If the email exist in our database, the password reset pin will be sent shortly"});
+        }
+
+        return res.json({status: "success", 
+            message: "Unable to process your request at the moment. Plz try again later!"});
     }
 
     res.json({status: "error", 

@@ -44,9 +44,24 @@ router.get("/", userAuthorization, async (req, res) => {
     //recieve new ticket data
     try {
         const userId = req.userId;
-
         const result = await getTickets(userId);
-        
+
+        return res.json({ status: "success", result }); 
+    
+    } catch (error) {
+        res.json({ status: "error", message: error.message });
+    }
+});
+
+//Get a specific ticket
+router.get("/:_id", userAuthorization, async (req, res) => {
+    //recieve new ticket data
+    try {
+
+        const { _id } = req.params;
+        const userId = req.userId;
+        const result = await getTickets(userId);
+
         return res.json({ status: "success", result }); 
     
     } catch (error) {

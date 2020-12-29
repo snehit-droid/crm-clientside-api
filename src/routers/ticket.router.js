@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { insertTicket, getTickets, getTicketById, updateClientReply, updateStatusClose } = require("../model/ticket/Ticket.model");
+const { insertTicket, getTickets, getTicketById, updateClientReply, updateStatusClose, deleteTicket } = require("../model/ticket/Ticket.model");
 const { userAuthorization } = require("../middlewares/authorization.middleware");
 
 router.all("/", (req, res, next) => {
@@ -101,6 +101,22 @@ router.patch("/close-ticket/:_id", userAuthorization, async (req, res) => {
             return res.json({ status: "success", message: "The ticket has been closed" });
         } 
         return res.json({ status: "success", message: "unable to update the ticket" });
+    } catch (error) {
+        res.json({ status: "error", message: error.message });
+    }
+});
+
+//Delete a Ticket
+router.delete("/close-ticket/:_id", userAuthorization, async (req, res) => {
+    //recieve new ticket data
+    try {
+        const { _id } = req.params;
+        const clientId = req.userId;
+        const result = await deleteTicket({ _id, clientId });
+        //_id is ticket id
+        // console.log(result);    //the result has the ticket that is deleted.
+        return res.json({ status: "success", message: "The ticket has been deleted" });
+    
     } catch (error) {
         res.json({ status: "error", message: error.message });
     }

@@ -107,7 +107,7 @@ router.patch("/close-ticket/:_id", userAuthorization, async (req, res) => {
 });
 
 //Delete a Ticket
-router.delete("/close-ticket/:_id", userAuthorization, async (req, res) => {
+router.delete("/:_id", userAuthorization, async (req, res) => {
     //recieve new ticket data
     try {
         const { _id } = req.params;

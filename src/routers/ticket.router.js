@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { insertTicket, getTickets, getTicketById } = require("../model/ticket/Ticket.model");
+const { insertTicket, getTickets, getTicketById, updateClientReply, updateStatusClose } = require("../model/ticket/Ticket.model");
 const { userAuthorization } = require("../middlewares/authorization.middleware");
 
 router.all("/", (req, res, next) => {
@@ -64,6 +64,43 @@ router.get("/:_id", userAuthorization, async (req, res) => {
 
         return res.json({ status: "success", result }); 
     
+    } catch (error) {
+        res.json({ status: "error", message: error.message });
+    }
+});
+
+//update reply message from client
+router.put("/:_id", userAuthorization, async (req, res) => {
+    //recieve new ticket data
+    try {
+        const { message, sender } = req.body;
+        const { _id } = req.params;
+        const clientId = req.userId;
+        const result = await updateClientReply({_id, message, sender});
+         //_id is ticket id
+        
+        if(result._id){
+            return res.json({ status: "success", message: "your message updated" });
+        } 
+        return res.json({ status: "success", message: "unable to update message please try again later" });
+    } catch (error) {
+        res.json({ status: "error", message: error.message });
+    }
+});
+
+//update ticket status to close
+router.patch("/close-ticket/:_id", userAuthorization, async (req, res) => {
+    //recieve new ticket data
+    try {
+        const { _id } = req.params;
+        const clientId = req.userId;
+        const result = await updateStatusClose({ _id, clientId });
+        //_id is ticket id
+        
+        if(result._id){
+            return res.json({ status: "success", message: "The ticket has been closed" });
+        } 
+        return res.json({ status: "success", message: "unable to update the ticket" });
     } catch (error) {
         res.json({ status: "error", message: error.message });
     }

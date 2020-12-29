@@ -42,4 +42,5 @@ const getTicketById = (_id, clientId) => {
 module.exports = {
     insertTicket,
     getTickets,
+    getTicketById,
 }

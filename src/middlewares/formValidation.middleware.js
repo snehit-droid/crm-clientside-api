@@ -8,6 +8,7 @@ const pin = Joi.number().min(100000).max(999999).required();
 
 const shortStr = Joi.string().min(2).max(50);
 const longStr = Joi.string().min(2).max(50);
+const dt = Joi.date();
 
 const newPassword = Joi.string()
 .alphanum()
@@ -43,6 +44,7 @@ const createNewTicketValidation = (req, res, next) => {
         subject: shortStr.required(),
         sender: shortStr.required(),
         message: longStr.required(),
+        issueDate: dt.required(),
     })
 
     const value = schema.validate(req.body)

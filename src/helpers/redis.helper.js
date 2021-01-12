@@ -5,7 +5,7 @@ const client = redis.createClient(process.env.REDIS_URL);
 const setJWT = (key, value) => {
     return new Promise((resolve, reject) => {
         try {
-            client.set(key, value, (err, res) => {
+            return client.set(key, value, (err, res) => {
                 resolve(res);
             }); 
         } catch (error) {

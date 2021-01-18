@@ -1,4 +1,5 @@
 const express = require("express");
+// const { route, post } = require("./ticket.router");
 const router = express.Router();
 const { insertUser, getUserByEmail, getUserById, updatePassword, storeUserRefreshJWT } = require("../model/user/User.model");
 const { hashPassword, comparePassword } = require("../helpers/bcrypt.helper");
@@ -7,7 +8,8 @@ const { userAuthorization } = require("../middlewares/authorization.middleware")
 const { setPasswordResetPin, getPinByEmailPin, deletePin } = require("../model/resetPin/ResetPin.model");
 const { emailProcessor } = require("../helpers/email.helper");
 const { resetPassReqValidation, updatePassValidation } = require("../middlewares/formValidation.middleware");
-const { deleteJwT } = require("../helpers/redis.helper");
+const { verify } = require("jsonwebtoken");
+const { deleteJWT } = require("../helpers/redis.helper");
 
 router.all("/", (req, res, next) => {
     // res.json({ message: "return from user router" });
@@ -22,21 +24,30 @@ router.get("/", userAuthorization, async (req, res) => {
 
     const userProf = await getUserById(_id);
     const { name, email } = userProf;
-    res.json({ user: {
-        _id,
-        name,
-        email,
-    }, 
+    res.json({ 
+        user: {
+            _id,
+            name,
+            email,
+        }, 
     });
 });
 
 //Create new user route
 router.post("/", async (req, res) => {
-    const { password } = req.body;
+    const { name, company, address, phone, email, password } = req.body;
     try {
         const hashedPass = await hashPassword(password);
-        req.body.password = hashedPass;
-        const result = await insertUser(req.body);
+        // req.body.password = hashedPass;
+        const newUserObj = {
+            name,
+            company,
+            address,
+            phone,
+            email,
+            password: hashedPass,
+        };
+        const result = await insertUser(newUserObj);
         console.log(result);
         res.json({ message: "New user created", result });
     } catch (error) {
@@ -56,9 +67,9 @@ router.post("/login", async (req, res) => {
 
     const user = await getUserByEmail(email);
     //the data related to particular user stored in the db is now catched inside "const user".
-    const passFromDb = (user && user._id ? user.password : null);
+    const passFromDb = ((user && user._id) ? user.password : null);
 
-    if(!passFromDb) return res.json({ status: "error", message: "Invalid email or password" });
+    if(!passFromDb) return res.json({ status: "error", message: "Invalid email or password!" });
     //hash password and compare (using bcrypt.compare) with the DB one.
 
     const result = await comparePassword(password, passFromDb);
@@ -70,8 +81,8 @@ router.post("/login", async (req, res) => {
     const accessJWT = await createAccessJWT(user.email, `${user._id}`);
     const refreshJWT = await createRefreshJWT(user.email, `${user._id}`);
 
-    res.json({ status: "success", message: "Login Successfully!", accessJWT, refreshJWT });
-})
+    res.json({ status: "success", message: "Login Successfully!", accessJWT, refreshJWT, });
+});
     
 // nodemailer is used for sending the code to email.    
 
@@ -88,12 +99,10 @@ router.post("/reset-password", resetPassReqValidation, async (req, res) => {
             type: "request-new-password",
         });
 
-        return res.json({status: "success", 
-        message: "If the email exist in our database, the password reset pin will be sent shortly"});
+        return res.json({status: "success", message: "If the email exist in our database, the password reset pin will be sent shortly.",});
     }
 
-    res.json({status: "error", 
-    message: "If the email exist in our database, the password reset pin will be sent shortly"});
+    res.json({status: "error", message: "If the email exist in our database, the password reset pin will be sent shortly"});
 })
 
 router.patch("/reset-password", updatePassValidation, async (req, res) => {
@@ -115,7 +124,7 @@ router.patch("/reset-password", updatePassValidation, async (req, res) => {
             //send email notification
             await emailProcessor({
                 email, 
-                type: 'password-update-success',
+                type: 'update-password-success',
             });
             //delete pin from database
             deletePin(email, pin);
@@ -132,7 +141,7 @@ router.delete("/logout", userAuthorization, async (req, res) => {
     const _id = req.userId;
 
     //delete accessJWT from redis database
-    deleteJwT(authorization);
+    deleteJWT(authorization);
 
     //delete refreshJWT from mongodb 
     const result = await storeUserRefreshJWT(_id, "");
@@ -141,7 +150,7 @@ router.delete("/logout", userAuthorization, async (req, res) => {
         return res.json({ status:'success', message:'Loged out Successfully' });
     }
 
-    res.json({ status:'error', message:'Unable to Logout' });
+    res.json({ status: 'error', message: 'Unable to Logout, plz try again later', });
 });
 
 module.exports = router;

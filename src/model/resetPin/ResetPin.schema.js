@@ -16,10 +16,10 @@ const ResetPinSchema = new Schema({
         type: Date,
         required: true,
         default: Date.now()
-    }
+    },
 });
 
 module.exports = {
-    ResetPinSchema: mongoose.model("Reset_pin", ResetPinSchema)
+    ResetPinSchema: mongoose.model("Reset_pin", ResetPinSchema),
 };
 //in module.exports, mongoose.model() the first parameter is 'database table name' the second param is schema designed above.

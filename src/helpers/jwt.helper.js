@@ -19,7 +19,7 @@ const createAccessJWT = async (email, _id) => {
     } catch (error) {
         return Promise.reject(error);
     }
-}
+};
 
 const createRefreshJWT = async (email, _id) => {
     try {
@@ -34,7 +34,7 @@ const createRefreshJWT = async (email, _id) => {
     } catch (error) {
         return Promise.reject(error);
     }    
-}
+};
 
 const verifyAccessJWT = (userJWT) => {
     try {

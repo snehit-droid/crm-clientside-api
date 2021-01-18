@@ -5,31 +5,31 @@ const UserSchema = new Schema({
     name: {
         type: String,
         maxlength: 50,
-        required: true
+        required: true,
     },
     company: {
         type: String,
         maxlength: 50,
-        required: true
+        required: true,
     },
     address: {
         type: String,
-        maxlength: 100
+        maxlength: 100,
     },
     phone: {
         type: Number,
-        maxlength: 11
+        maxlength: 11,
     },
     email: {
         type: String,
         maxlength: 50,
-        required: true
+        required: true,
     },
     password: {
         type: String,
         minlength: 8,
         maxlength: 100,
-        required: true
+        required: true,
     },
     refreshJWT: {
         token: {
@@ -42,7 +42,7 @@ const UserSchema = new Schema({
             required: true,
             default: Date.now(),
         },
-    }
+    },
 });
 
 module.exports = {

@@ -15,6 +15,7 @@ app.use(cors());
 
 //Mongodb connection Setup
 const mongoose = require('mongoose');
+
 mongoose.connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -25,11 +26,11 @@ if not mentioned, it might throw some errors*/
 
 if(process.env.NODE_ENV !== "production") {
     // (executes if not in production)
-    const mdb = mongoose.connection;
-    mdb.on("open", () => {
+    const mDb = mongoose.connection;
+    mDb.on("open", () => {
         console.log("MongoDB is connected");
     }); //checks if the mongo is connected or not.
-    mdb.on("error", (error) => {
+    mDb.on("error", (error) => {
         console.log(error);
     }); //logs if there is any error.
 

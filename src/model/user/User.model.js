@@ -1,11 +1,12 @@
-const { UserSchema } = require("./User.schema")
+const { token } = require("morgan");
+const { UserSchema } = require("./User.schema");
 
 const insertUser = (userObj) => {
     return new Promise((resolve, reject) => {
         UserSchema(userObj)
             .save()
-            .then(data => resolve(data))
-            .catch(error => reject(error));
+            .then((data) => resolve(data))
+            .catch((error) => reject(error));
     });
 };
 
@@ -48,15 +49,18 @@ const getUserById = (_id) => {
 const storeUserRefreshJWT = (_id, token) => {
     return new Promise((resolve, reject) => {
         try {
-            UserSchema.findOneAndUpdate({_id}, 
-                {$set: {"refreshJWT.token":token, 
-                "refreshJWT.addedAt": Date.now() }}, {new:true}
-                )
-                .then(data => {resolve(data); /*console.log("=>",data);*/})
-                .catch(error => {
-                    reject(error);
+            UserSchema.findOneAndUpdate(
+                {_id}, 
+                {
+                    $set: {"refreshJWT.token": token, "refreshJWT.addedAt": Date.now() },
+                }, 
+                { new: true }
+            )
+                .then((data) => resolve(data))
+                .catch((error) => {
                     console.log(error);
-                }); //{new:true} returns a new tick.
+                    reject(error);
+                });     //{new:true} returns a new tick.
         } catch (error) {
             console.log(error);
             reject(error);
@@ -67,20 +71,24 @@ const storeUserRefreshJWT = (_id, token) => {
 const updatePassword = (email, newhashedPass) => {
     return new Promise((resolve, reject) => {
         try {
-            UserSchema.findOneAndUpdate({email}, 
-                {$set: { "password": newhashedPass }}, {new:true}
-                )
-                .then(data => {resolve(data); /*console.log("=>",data);*/})
-                .catch(error => {
-                    reject(error);
+            UserSchema.findOneAndUpdate(
+                {email}, 
+                {
+                    $set: { password: newhashedPass },
+                }, 
+                {new:true}
+            )
+                .then((data) => resolve(data))
+                .catch((error) => {
                     console.log(error);
+                    reject(error);
                 }); //{new:true} returns a new tick.
         } catch (error) {
             console.log(error);
             reject(error);
         } 
-    })
-}
+    });
+};
 
 module.exports = {
     insertUser,

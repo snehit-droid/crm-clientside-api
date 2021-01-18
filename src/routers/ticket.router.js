@@ -21,20 +21,22 @@ router.post("/", createNewTicketValidation, userAuthorization, async (req, res) 
         const ticketObj = {
             clientId: userId,
             subject,
-            conversations:[
+            conversations: [
                 {
                     sender,
-                    message
-                }
-            ]
-        }
+                    message,
+                },
+            ],
+        };
 
         const result = await insertTicket(ticketObj);
+
         if(result._id){
-            return res.json({ status:"success", message:"New Ticket has been created!" });    
+            return res.json({ status: "success", message: "New Ticket has been created!", });    
         }
+
         //insert in mongodb
-        res.json({ status:"error", message: "Unable to create the ticket, please try again later" });
+        res.json({ status:"error", message: "Unable to create the ticket, please try again later", });
     } catch (error) {
         res.json({ status:"error", message: error.message });
     }
@@ -47,7 +49,7 @@ router.get("/", userAuthorization, async (req, res) => {
         const userId = req.userId;
         const result = await getTickets(userId);
 
-        return res.json({ status: "success", result }); 
+        return res.json({ status: "success", result, }); 
     
     } catch (error) {
         res.json({ status: "error", message: error.message });
@@ -58,12 +60,11 @@ router.get("/", userAuthorization, async (req, res) => {
 router.get("/:_id", userAuthorization, async (req, res) => {
     //recieve new ticket data
     try {
-
         const { _id } = req.params;
         const clientId = req.userId;
         const result = await getTicketById(_id, clientId);
 
-        return res.json({ status: "success", result }); 
+        return res.json({ status: "success", result, }); 
     
     } catch (error) {
         res.json({ status: "error", message: error.message });
@@ -77,13 +78,13 @@ router.put("/:_id", replyTicketMessageValidation, userAuthorization, async (req,
         const { message, sender } = req.body;
         const { _id } = req.params;
         const clientId = req.userId;
-        const result = await updateClientReply({_id, message, sender});
+        const result = await updateClientReply({ _id, message, sender });
          //_id is ticket id
         
         if(result._id){
-            return res.json({ status: "success", message: "your message updated" });
+            return res.json({ status: "success", message: "your message updated", });
         } 
-        return res.json({ status: "success", message: "unable to update message please try again later" });
+        res.json({ status: "error", message: "unable to update your message please try again later" });
     } catch (error) {
         res.json({ status: "error", message: error.message });
     }
@@ -99,9 +100,9 @@ router.patch("/close-ticket/:_id", userAuthorization, async (req, res) => {
         //_id is ticket id
         
         if(result._id){
-            return res.json({ status: "success", message: "The ticket has been closed" });
+            return res.json({ status: "success", message: "The ticket has been closed", });
         } 
-        return res.json({ status: "success", message: "unable to update the ticket" });
+        res.json({ status: "error", message: "unable to update the ticket", });
     } catch (error) {
         res.json({ status: "error", message: error.message });
     }
@@ -116,7 +117,7 @@ router.delete("/:_id", userAuthorization, async (req, res) => {
         const result = await deleteTicket({ _id, clientId });
         //_id is ticket id
         // console.log(result);    //the result has the ticket that is deleted.
-        return res.json({ status: "success", message: "The ticket has been deleted" });
+        return res.json({ status: "success", message: "The ticket has been deleted", });
     
     } catch (error) {
         res.json({ status: "error", message: error.message });

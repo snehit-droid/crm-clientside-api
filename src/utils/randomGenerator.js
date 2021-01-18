@@ -8,6 +8,4 @@ const randomPinNumber = (length) => {
     return pin;
 };
 
-module.exports = {
-    randomPinNumber,
-};
+module.exports = { randomPinNumber };

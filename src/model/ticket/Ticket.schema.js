@@ -2,29 +2,29 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const TicketSchema = new Schema({
-    clientId:{
-        type: Schema.Types.ObjectId
+    clientId: {
+        type: Schema.Types.ObjectId,
     },
     subject: {
         type: String,
         maxlength: 100,
         required: true,
-        default: ""
+        default: "",
     },
-    openAt:{
+    openAt: {
         type: Date,
         required: true,
         default: Date.now(),
     },
-    status:{
+    status: {
         type: String,
         maxlength: 30,
         required: true,
         default: "Pending Operator Response",
     },
-    conversations:[
+    conversations: [
         {
-            sender:{
+            sender: {
                 type: String,
                 maxlength: 50,
                 required: true,
@@ -36,7 +36,7 @@ const TicketSchema = new Schema({
                 required: true,
                 default: "",
             },
-            msgAt:{
+            msgAt: {
                 type: Date,
                 required: true,
                 default: Date.now(), 

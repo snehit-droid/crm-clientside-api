@@ -1,5 +1,6 @@
 const { ResetPinSchema } = require("./ResetPin.schema");
 const { randomPinNumber } = require("../../utils/randomGenerator");
+// const { token } = require("morgan");
 
 const setPasswordResetPin = async (email) => {
     const pinLength = 6;
@@ -7,14 +8,14 @@ const setPasswordResetPin = async (email) => {
 
     const resetObj = {
         email,
-        pin : randPin
+        pin: randPin,
     }
 
     return new Promise((resolve, reject) => {
         ResetPinSchema(resetObj)
             .save()
-            .then(data => resolve(data))
-            .catch(error => reject(error));
+            .then((data) => resolve(data))
+            .catch((error) => reject(error));
     });
 };
 
@@ -27,13 +28,13 @@ const getPinByEmailPin = (email, pin) => {
                     resolve(false);
                 }
                 resolve(data);
-            }) 
+            }); 
         } catch (error) {
             reject(error);
             console.log(error);
         }
-    })
-}
+    });
+};
 
 const deletePin = (email, pin) => {
     try {

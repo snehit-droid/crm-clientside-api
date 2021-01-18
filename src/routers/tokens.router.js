@@ -18,7 +18,7 @@ router.get("/", async (req, res, next) => {
 
             if(dBrefreshToken !== authorization || tokenExp < today){
                 //expired
-                return res.status(403).json({message: "Forbidden, token expired"});
+                return res.status(403).json({ message: "Forbidden, token expired" });
             }
 
             const accessJWT = await createAccessJWT(decoded.email, userProf._id.toString());
@@ -26,7 +26,7 @@ router.get("/", async (req, res, next) => {
             //delete old token from the redis db
 
 
-            return res.json({status:"success", accessJWT});
+            return res.json({ status: "success", accessJWT });
         }
     }
     //2. check if the jwt is exist in database.
